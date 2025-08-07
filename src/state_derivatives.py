@@ -11,11 +11,10 @@ def state_derivatives(state, robot, controllers, phase_offsets):
     u2, _ = controllers[1].get_desired_acceleration(joint2_state, pitch1, phase_offsets[1])
     u_ver = np.array([u1, u2])
     
-    M, CG, _ = robot.forward_dynamics(state[:2], state[2:], tau = None)
+    M, CG, _ = robot.forward_dynamics(state[:2], state[2:], tau = 0)
 
     tau = M @ u_ver + CG
 
-    _,_, q_ddot = robot.forward_dynamics(state[2:], state[:2])
-    
-    q_ddot = robot.forward_dynamics(state, tau)
+    M,CG, q_ddot = robot.forward_dynamics(state[:2], state[2:], tau)
+   
     return np.array([q1_dot, q2_dot, q_ddot[0], q_ddot[1]])

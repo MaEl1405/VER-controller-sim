@@ -22,23 +22,26 @@ class TwoLinkArm:
         """ """
         q1, q2 = q
         q1_dot, q2_dot = q_dot
-
+        
+        c1 = np.cos(q1)
         c2 = np.cos(q2)
         c12 = np.cos(q1 + q2)
+        s2 = np.sin(q2)
+
 
         # Mass matrix
         M11  = (self.m1 + self.m2) * self.L1**2 + self.m2 * self.L2**2 + 2 * self.m2 * self.L1 * self.L2 * c2
         M12 = self.m2 * self.L2**2 + self.m2 * self.L1 * self.L2 * c2
-        M22 = self.m2 * self.L2**2
+        M22 =  self.m2 * self.L2**2
 
         M = np.array([[M11, M12], [M12, M22]])
 
         # Coriolis vector
-        s2 = np.sin(q2)
-        c1 = -self.m2 * self.L1 * self.L2 * s2 * (2 * q1_dot * q2_dot + q2_dot**2)
-        c2 = self.m2 * self.L1 * self.L2 * s2 * q1_dot**2
+        C1 = -self.m2 * self.L1 * self.L2 * s2 * (2 * q1_dot * q2_dot + q2_dot**2)
+        C2 = self.m2 * self.L1 * self.L2 * s2 * q1_dot**2
+
         
-        C = np.array([c1,c2])
+        C = np.array([C1,C2])
 
         # Gravity vector
         G1 = self.g * ((self.m1 + self.m2) * self.L1 * c1 + self.m2 * self.L2 * c12)
@@ -46,6 +49,7 @@ class TwoLinkArm:
 
         G = np.array([G1, G2])
         CG = C+G
+
 
         return M, CG
     
@@ -109,13 +113,39 @@ class TwoLinkArm:
     def forward_dynamics(self, q, q_dot, tau):
         if self.method == "point":
             M,CG =  self._compute_point_mass_dynamics(q, q_dot)
-            q_ddot = np.linalg.solve(M, tau - C - G)
+            q_ddot = np.linalg.solve(M, tau - CG)
             return M, CG, q_ddot
         
         elif self.method == "distributed":
             M,CG = self._compute_distributed_mass_dynamics(q, q_dot)
             q_ddot = np.linalg.solve(M, tau - CG)
             return M,CG, q_ddot
+    def get_mass_matrix(self, q):
+        """Computes the Mass Matrix M(q)."""
+        q1, q2 = q
+        c2 = np.cos(q2)
+        M11 = (self.m1 + self.m2) * self.L1**2 + self.m2 * self.L2**2 + 2 * self.m2 * self.L1 * self.L2 * c2
+        M12 = self.m2 * self.L2**2 + self.m2 * self.L1 * self.L2 * c2
+        return np.array([[M11, M12], [M12, self.m2 * self.L2**2]])
+
+    def get_coriolis_vector(self, q, q_dot):
+        """Computes the Coriolis/Centrifugal Vector C(q, q_dot)."""
+        q1, q2 = q
+        q1_dot, q2_dot = q_dot
+        s2 = np.sin(q2)
+        C1 = -self.m2 * self.L1 * self.L2 * s2 * (2 * q1_dot * q2_dot + q2_dot**2)
+        C2 = self.m2 * self.L1 * self.L2 * s2 * q1_dot**2
+        return np.array([C1, C2])
+
+    def get_gravity_vector(self, q):
+        """Computes the Gravity Vector G(q)."""
+        q1, q2 = q
+        c1 = np.cos(q1)
+        c12 = np.cos(q1 + q2)
+        G1 = self.g * ((self.m1 + self.m2) * self.L1 * c1 + self.m2 * self.L2 * c12)
+        G2 = self.g * self.m2 * self.L2 * c12
+        return np.array([G1, G2])
+
         
 
 
