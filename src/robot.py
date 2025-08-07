@@ -45,8 +45,9 @@ class TwoLinkArm:
         G2 = self.g * self.m2 * self.L2 * c12
 
         G = np.array([G1, G2])
+        CG = C+G
 
-        return M, C, G
+        return M, CG
     
     def _compute_distributed_mass_dynamics(self, q, q_dot):
         # Parameters
@@ -107,9 +108,9 @@ class TwoLinkArm:
 
     def forward_dynamics(self, q, q_dot, tau):
         if self.method == "point":
-            M,C,G =  self._compute_point_mass_dynamics(q, q_dot)
+            M,CG =  self._compute_point_mass_dynamics(q, q_dot)
             q_ddot = np.linalg.solve(M, tau - C - G)
-            return M, C, G, q_ddot
+            return M, CG, q_ddot
         
         elif self.method == "distributed":
             M,CG = self._compute_distributed_mass_dynamics(q, q_dot)
