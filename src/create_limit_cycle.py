@@ -19,7 +19,7 @@ def prepare_joint_tables(q, q_dot, q_ddot):
     return table, rho
 
 
-def create_limit_cycles_from_path(num_points=2000, l1=1.0, l2=1.0, radius=0.5, center=(1.2, 0.0)):
+def create_limit_cycles_from_path(num_points=2000, l1=1.0, l2=1.0, radius=0.5, center=(1.0, -1.0)):
     T = 2 * np.pi
     t = np.linspace(0, T, num_points, endpoint=False)
     dt = T / num_points
