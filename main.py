@@ -1,5 +1,5 @@
 import numpy as np
-from limit_cycle import table_rho
+from src.limit_cycle import table_rho
 import matplotlib.pyplot as plt
 import pdb
 import numpy as np
