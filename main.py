@@ -20,10 +20,10 @@ T = 2*np.pi
 t = np.linspace(0, T, N)
 circle_center = [1 ,-1]
 circle_rad = 0.5
-P_GAIN = 80.0
-K_GAIN = 10.0
-DT = 0.005
-SIM_TIME = 50.0
+P_GAIN = 10.0
+K_GAIN = 1.0
+DT = 0.01
+SIM_TIME = 40
 time_steps = np.arange(0, SIM_TIME, DT)
 
 #############################################################################
@@ -40,7 +40,10 @@ PHASE_OFFSET_DEG = np.rad2deg(PHASE_OFFSET_RAD[0])
 print(f"Calculated Desired Phase Offset: {PHASE_OFFSET_DEG} degrees")
 
 # Initialize robot state and controllers
-robot_state = np.array([0.0, -np.pi/4, 0.0, 0.0])
+# robot_state = np.array([0.1, -np.pi/1.7, 0.0, 0.0])
+robot_state = np.array([-0.5, -np.pi/1.7, 0.0, 0.0])
+ 
+
 controller1 = VER_Controller(tables1, P_GAIN, K_GAIN)
 controller2 = VER_Controller(tables2, P_GAIN, K_GAIN)
 controllers = [controller1, controller2]
@@ -71,9 +74,6 @@ for t in time_steps:
     history['beta1'].append(beta1)
     history['beta2'].append(beta2)
 
-
-
-
     history['x'].append(x); history['xdot'].append(xdot)
     history['y'].append(y); history['ydot'].append(ydot)
 
@@ -85,6 +85,10 @@ for t in time_steps:
     robot_state = rk4_step(robot_state, DT, robot, controllers, phase_offsets)
 
 # visualization
+
+
+
+
 fig, axs = plt.subplots(3, 2, figsize=(20, 30))
 fig.suptitle(f'Phase offset:({PHASE_OFFSET_DEG:.2f}°)', fontsize=16)
 
@@ -155,3 +159,5 @@ plt.show()
 
 # animate two link manipulator
 animate_robot(history, time_steps, robot.L1, robot.L2, tables1, tables2)
+
+

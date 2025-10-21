@@ -11,12 +11,13 @@ class TwoLinkArm:
         self.m1 ,self.m2 = m1, m2 
         self.L1, self.L2 = L1, L2  
         self.g = g
+        self.prev_cartesin_vel = np.zeros(2)
         self.link_width = link_width
         self.method = method.lower()  # get method for calculating forward dynamics (point or distributed)
-
         if self.method not in ["point", "distributed"]:
             raise ValueError("Selected method must be 'point' or 'distributed'.")
-    
+
+        self.temp = []
 
     def _compute_point_mass_dynamics(self, q, q_dot):
         """ """
@@ -151,6 +152,18 @@ class TwoLinkArm:
                       [self.L1*np.cos(q1)+self.L2*np.cos(q1+q2),  self.L2*np.cos(q1+q2)]
                        ])
         return J
+        
+    def get_jacob_dot(self, q1, q2, q_dot):
+        l1, l2 = self.L1, self.L2
+        q1_dot, q2_dot = q_dot
+        q12 = q1 + q2
+        dq_sum = q1_dot + q2_dot
+        Jdot = np.array([
+            [-l1*np.cos(q1)*q1_dot - l2*np.cos(q12)*dq_sum, -l2*np.cos(q12)*dq_sum],
+            [-l1*np.sin(q1)*q1_dot - l2*np.sin(q12)*dq_sum, -l2*np.sin(q12)*dq_sum]
+        ])
+        return Jdot
+  
 
 
         
