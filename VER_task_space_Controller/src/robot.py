@@ -9,13 +9,15 @@ class TwoLinkArm:
     2. 'distributed': Assumes mass is distributed along the links (as rectangles).
     """
 
-    def __init__(self, m1=1.0, m2=1.0, L1=1.0, L2=1.0, g=9.81, link_width=0.1, method="point"):
+    def __init__(self, m1=1.0, m2=1.0, L1=1.0, L2=1.0, g=9.81, link_width=0.1,base_point = None,
+                  method="point"):
         # --- Physical Parameters ---
         self.m1 = m1  # Mass of link 1
         self.m2 = m2  # Mass of link 2
         self.L1 = L1  # Length of link 1
         self.L2 = L2  # Length of link 2
         self.g = g    # Gravitational acceleration
+        self.base_point = base_point # base point of instantiated model
         
         # Parameter for distributed mass model
         self.link_width = link_width 
@@ -156,7 +158,7 @@ class TwoLinkArm:
         x = self.L1 * np.cos(q1) + self.L2 * np.cos(q1 + q2)
         y = self.L1 * np.sin(q1) + self.L2 * np.sin(q1 + q2)
         
-        return x, y
+        return x + self.base_point[0], y + self.base_point[1]
 
     def get_jacob(self, q1, q2):
         """
