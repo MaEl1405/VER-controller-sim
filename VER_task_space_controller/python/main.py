@@ -27,6 +27,11 @@ K_GAIN = 1.0   # Synchronizer gain
 tables1, x_rho = table_rho("x", w=w, t=t, circle_center=circle_center, circle_rad=circle_rad) # x-axis limit cycle
 tables2, y_rho = table_rho("y", w=w, t=t, circle_center=circle_center, circle_rad=circle_rad) # y-axis limit cycle
 
+
+
+import pdb 
+pdb.set_trace()
+
 PHASE_OFFSET_RAD = x_rho-y_rho  # Phase offset in radians
 PHASE_OFFSET_DEG = np.rad2deg(PHASE_OFFSET_RAD[0]) # Phase offset in deg
 phase_offsets = np.array([PHASE_OFFSET_RAD[0], -PHASE_OFFSET_RAD[0]])
